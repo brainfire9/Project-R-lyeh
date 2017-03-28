@@ -21,8 +21,8 @@ public class PlayerMovement : MonoBehaviour
     // Fixed update is called in sync with physics
     private void FixedUpdate()
     {
-        if (Input.GetMouseButton(0))
-        {
+		if (Input.GetMouseButton (0))
+		{
 			print ("Cursor raycast hit layer: " + cameraRaycaster.layerHit);
 			// print ("Current Click Target: " + currentClickTarget);
 			switch (cameraRaycaster.layerHit)
@@ -38,18 +38,19 @@ public class PlayerMovement : MonoBehaviour
 					print ("Unexpected Layer Found!");
 					return;
 			}
-        }
+		}
 
-		var playerToClickPoint = currentClickTarget - transform.position;
-		if (playerToClickPoint.magnitude >= walkMoveStopRadius)
-		{
-			// Move is called here so we don't have to hold down button
-			m_Character.Move(playerToClickPoint - transform.position, false, false);	
-		}
-		else
-		{
-			m_Character.Move(Vector3.zero,false, false);
-		}
+			var playerToClickPoint = currentClickTarget - transform.position;
+			if (playerToClickPoint.magnitude >= walkMoveStopRadius)
+			{
+				// Move is called here so we don't have to hold down button
+				print ("playerToClickPoint " + playerToClickPoint);
+				print ("Magnitude: " + playerToClickPoint.magnitude);
+				m_Character.Move (playerToClickPoint, false, false);	
+			} else
+			{
+				m_Character.Move (Vector3.zero, false, false);
+			}
 
     }
 }
