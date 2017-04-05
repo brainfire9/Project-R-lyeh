@@ -28,11 +28,13 @@ public class PlayerMovement : MonoBehaviour
 		if (Input.GetKeyDown(KeyCode.G)) // G for gamepad.  TODO allow player to map later
 		{
 			isInDirectMode = !isInDirectMode; // toggle mode
+			print ("isInDirectMode = " + isInDirectMode);
+			currentClickTarget = transform.position;
 		}
 
 		if (isInDirectMode)
 		{
-			// ProcessDirectMovement();	
+			ProcessDirectMovement();	
 		} else
 		{
 			ProcessMouseMovement ();
@@ -40,8 +42,21 @@ public class PlayerMovement : MonoBehaviour
 
     }
 
-	void ProcessMouseMovement ()
+	private void ProcessDirectMovement()
 	{
+		float h = Input.GetAxis ("Horizontal");
+		float v = Input.GetAxis ("Vertical");
+
+		// calculate camera relative direction to move
+		Vector3 m_CamForward = Vector3.Scale(Camera.main.transform.forward, new Vector3(1, 0, 1)).normalized;
+		Vector3 m_Move = v*m_CamForward + h*Camera.main.transform.right;
+
+		m_Character.Move (m_Move, false, false);
+	}
+
+	private void ProcessMouseMovement ()
+	{
+		//TODO Need to clear CurrentClickTarget when changing from keyboard back to mouse
 		if (Input.GetMouseButton (0))
 		{
 			print ("Cursor raycast hit layer: " + cameraRaycaster.layerHit);

@@ -18,7 +18,7 @@ public class CursorAffordance : MonoBehaviour
 	}
 	
 	// Update is called once per frame
-	void Update () 
+	void LateUpdate () 
 	{
 		switch (cameraRaycaster.layerHit)
 		{
@@ -32,7 +32,7 @@ public class CursorAffordance : MonoBehaviour
 				Cursor.SetCursor (unknownCursor, cursorHotspot, CursorMode.Auto);
 				break;
 			default:
-				Debug.Log ("Shouldn't get here!");
+				Debug.Log ("Don't know what cursor to show!");
 				break;
 		}
 
