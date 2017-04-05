@@ -9,7 +9,9 @@ public class PlayerMovement : MonoBehaviour
 
     ThirdPersonCharacter m_Character;   // A reference to the ThirdPersonCharacter on the object
     CameraRaycaster cameraRaycaster;
-    Vector3 currentClickTarget;
+	Vector3 currentClickTarget;
+
+	bool isInDirectMode = false; // TODO consider making static
         
     private void Start()
     {
@@ -18,9 +20,28 @@ public class PlayerMovement : MonoBehaviour
         currentClickTarget = transform.position;
     }
 
+	// TODO fix issue with click to move and wsad conflict
+
     // Fixed update is called in sync with physics
     private void FixedUpdate()
     {
+		if (Input.GetKeyDown(KeyCode.G)) // G for gamepad.  TODO allow player to map later
+		{
+			isInDirectMode = !isInDirectMode; // toggle mode
+		}
+
+		if (isInDirectMode)
+		{
+			// ProcessDirectMovement();	
+		} else
+		{
+			ProcessMouseMovement ();
+		}
+
+    }
+
+	void ProcessMouseMovement ()
+	{
 		if (Input.GetMouseButton (0))
 		{
 			print ("Cursor raycast hit layer: " + cameraRaycaster.layerHit);
@@ -39,19 +60,18 @@ public class PlayerMovement : MonoBehaviour
 					return;
 			}
 		}
-
-			var playerToClickPoint = currentClickTarget - transform.position;
-			if (playerToClickPoint.magnitude >= walkMoveStopRadius)
-			{
-				// Move is called here so we don't have to hold down button
-				print ("playerToClickPoint " + playerToClickPoint);
-				print ("Magnitude: " + playerToClickPoint.magnitude);
-				m_Character.Move (playerToClickPoint, false, false);	
-			} else
-			{
-				m_Character.Move (Vector3.zero, false, false);
-			}
-
-    }
+		var playerToClickPoint = currentClickTarget - transform.position;
+		if (playerToClickPoint.magnitude >= walkMoveStopRadius)
+		{
+			// Move is called here so we don't have to hold down button
+			print ("playerToClickPoint " + playerToClickPoint);
+			print ("Magnitude: " + playerToClickPoint.magnitude);
+			m_Character.Move (playerToClickPoint, false, false);
+		}
+		else
+		{
+			m_Character.Move (Vector3.zero, false, false);
+		}
+	}
 }
 
