@@ -22,8 +22,8 @@ public class CameraRaycaster : MonoBehaviour
         get { return layerHit; }
     }
 
-	public delegate void OnLayerChange(); // Declare new delegate type
-	public OnLayerChange layerChangeObservers; // Instantiate an observer set
+	public delegate void OnLayerChange(Layer newLayer); // Declare new delegate type
+	public event OnLayerChange onLayerChange; // Instantiate an observer set
 
     void Start()
     {
@@ -43,7 +43,7 @@ public class CameraRaycaster : MonoBehaviour
 				if (layerHit != layer)
 				{
 					layerHit = layer;
-					layerChangeObservers (); // Call the delegates
+					onLayerChange (layer); // Call the delegates
 				}
 				layerHit = layer;
                 return;
@@ -52,7 +52,14 @@ public class CameraRaycaster : MonoBehaviour
 
         // Otherwise return background hit
         raycastHit.distance = distanceToBackground;
-        layerHit = Layer.RaycastEndStop;
+        
+		// This solves the problem with Unknown Cursor not displaying
+		if (layerHit != Layer.RaycastEndStop)
+		{
+			layerHit = Layer.RaycastEndStop;
+			onLayerChange (Layer.RaycastEndStop);
+		}
+
     }
 
     RaycastHit? RaycastForLayer(Layer layer)
