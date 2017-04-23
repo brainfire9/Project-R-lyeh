@@ -6,10 +6,11 @@ using UnityStandardAssets.Characters.ThirdPerson;
 public class PlayerMovement : MonoBehaviour
 {
 	[SerializeField] float walkMoveStopRadius = 0.2f;
+	[SerializeField] float attackMoveStopRadius = 5f;
 
 	ThirdPersonCharacter thirdPersonCharacter;   // A reference to the ThirdPersonCharacter on the object
     CameraRaycaster cameraRaycaster;
-	Vector3 currentClickTarget;
+	Vector3 currentClickTarget,clickPoint;
 
 	bool isInDirectMode = false; // TODO consider making static
         
@@ -60,22 +61,29 @@ public class PlayerMovement : MonoBehaviour
 		if (Input.GetMouseButton (0))
 		{
 			// Below is just for debug
-			print ("Cursor raycast hit layer: " + cameraRaycaster.currentLayerHit);
+			//print ("Cursor raycast hit layer: " + cameraRaycaster.currentLayerHit);
 			// print ("Current Click Target: " + currentClickTarget);
+			clickPoint = cameraRaycaster.hit.point;
 			switch (cameraRaycaster.currentLayerHit)
 			{
 				case Layer.Walkable:
-					currentClickTarget = cameraRaycaster.hit.point;
+					//currentClickTarget = clickPoint;
+					currentClickTarget = ShortDestination (clickPoint, walkMoveStopRadius);
 					// Move can be here if you want to hold down button to walk
 					break;
 				case Layer.Enemies:
-					print ("Can't move to enemy location");
+					currentClickTarget = ShortDestination (clickPoint, attackMoveStopRadius);
 					break;
 				default:
 					print ("Unexpected Layer Found!");
 					return;
 			}
 		}
+		WalkToDestination ();
+	}
+
+	void WalkToDestination ()
+	{
 		var playerToClickPoint = currentClickTarget - transform.position;
 		if (playerToClickPoint.magnitude >= walkMoveStopRadius)
 		{
@@ -89,6 +97,26 @@ public class PlayerMovement : MonoBehaviour
 		{
 			thirdPersonCharacter.Move (Vector3.zero, false, false);
 		}
+	}
+
+	Vector3 ShortDestination(Vector3 destination, float shortening)
+	{
+		Vector3 reductionVector = (destination - transform.position).normalized * shortening;
+		return destination - reductionVector;
+	}
+
+	void OnDrawGizmos()
+	{
+		// Draw movement gizmos
+
+		Gizmos.color = Color.black;
+		Gizmos.DrawLine (transform.position, currentClickTarget);
+		Gizmos.DrawSphere (currentClickTarget, 0.1f);
+		Gizmos.DrawSphere (clickPoint, 0.15f);
+	
+		// Draw attack sphere
+		// Gizmos.color = new Color(255f, 0f, 0f, .5f);
+		// Gizmos.DrawSphere (transform.position, attackMoveStopRadius);
 	}
 }
 
